@@ -14,7 +14,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB , KC_Q        , KC_W        , KC_E        , KC_R        , KC_T       ,                                 KC_Y   , KC_U        , KC_I        , KC_O        , KC_P           , KC_BSLS,
         KC_LCTL, LT(3, KC_A) , LCTL_T(KC_S), LALT_T(KC_D), LGUI_T(KC_F), KC_G       ,                                 KC_H   , RGUI_T(KC_J), RALT_T(KC_K), RCTL_T(KC_L), LT(3, KC_SCLN) , KC_QUOT,
         KC_LSFT, KC_Z        , KC_X        , KC_C        , KC_V        , KC_B       , LSFT_T(KC_ESC), RSFT_T(KC_TAB), KC_N   , KC_M        , KC_COMM     , KC_DOT      , KC_SLSH        , KC_RSFT,
-                                                   LALT_T(KC_MINS), LGUI_T(KC_EQUAL), LCTL_T(KC_ENT), KC_SPC        , LT(1, KC_P0), LT(2, KC_PLUS)
+                                                   LALT_T(KC_MINS), LGUI_T(KC_EQUAL), LCTL_T(KC_ENT), KC_SPC        , LT(1, KC_P0), LT(2, KC_GRV)
     ),
 
     // lower
@@ -38,9 +38,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // raise+lower, or hold A, or hold semicolon
     [3] = LAYOUT(
         _______, _______     , _______     , _______     , _______     , _______    ,                                 _______, _______     , _______     , _______     , _______        , KC_DEL ,
-        _______, _______     , _______     , _______     , _______     , _______    ,                                 _______, KC_PGUP     , KC_HOME     , KC_LBRC     , KC_RBRC        , _______,
+        _______, _______     , _______     , _______     , _______     , _______    ,                                 _______, _______     , _______     , KC_LBRC     , KC_RBRC        , _______,
         _______, _______     , _______     , _______     , _______     , _______    ,                                 KC_LEFT, KC_DOWN     , KC_UP       , KC_RGHT     , _______        , _______,
-        _______, _______     , _______     , _______     , _______     , _______    , _______       , _______       , _______, KC_PGDN     , KC_END      , _______     , _______        , _______,
+        _______, _______     , _______     , _______     , _______     , _______    , _______       , _______       , KC_HOME, KC_PGDN     , KC_PGUP     , KC_END      , _______        , _______,
                                                            _______     , _______    , KC_BSPC       , KC_DEL        , _______, _______
     )
 };
