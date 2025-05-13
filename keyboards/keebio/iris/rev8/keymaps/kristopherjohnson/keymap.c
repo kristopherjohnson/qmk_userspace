@@ -40,7 +40,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Hold Space, or raise+lower
     // "Symbols layer" with symbols on the left and right
     [3] = LAYOUT(
-        _______, _______     , _______     , _______     , _______     , _______    ,                                 _______, _______     , _______     , KC_LPRN     , KC_RPRN        , _______,
+        _______, KC_EXLM     , KC_AT       , KC_HASH     , KC_DLR      , KC_PERC    ,                                 KC_CIRC, KC_AMPR     , KC_ASTR     , KC_LPRN     , KC_RPRN        , _______,
         _______, KC_EXLM     , KC_AT       , KC_LCBR     , KC_RCBR     , KC_PERC    ,                                 KC_CIRC, KC_AMPR     , KC_ASTR     , KC_LBRC     , KC_RBRC        , _______,
         _______, KC_GRV      , KC_ASTR     , KC_MINS     , KC_EQUAL    , KC_PLUS    ,                                 _______, KC_RGUI     , KC_RALT     , KC_RCTL     , KC_RSFT        , _______,
         _______, KC_CAPS     , _______     , KC_LBRC     , KC_RBRC     , _______    , KC_LEFT       , KC_RGHT       , _______, _______     , _______     , _______     , _______        , _______,
@@ -50,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Hold Enter
     // "Navigation layer" with arrow keys and home/end/pgup/pgdn on right
     [4] = LAYOUT(
-        _______, _______     , _______     , _______     , _______     , _______    ,                                 _______, _______     , _______     , _______     , _______        , KC_DEL ,
+        _______, KC_EXLM     , KC_AT       , KC_HASH     , KC_DLR      , KC_PERC    ,                                 _______, _______     , _______     , _______     , _______        , KC_DEL ,
         _______, _______     , _______     , _______     , _______     , _______    ,                                 _______, _______     , _______     , KC_LBRC     , KC_RBRC        , _______,
         _______, KC_LSFT     , KC_LCTL     , KC_LALT     , KC_LGUI     , _______    ,                                 KC_LEFT, KC_DOWN     , KC_UP       , KC_RGHT     , KC_RGHT        , _______,
         _______, KC_CAPS     , _______     , _______     , _______     , _______    , KC_LEFT       , KC_RGHT       , KC_HOME, KC_PGDN     , KC_PGUP     , KC_END      , _______        , _______,
