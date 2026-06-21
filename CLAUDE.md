@@ -6,7 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A **QMK Userspace** repository: an external, self-contained set of QMK keymaps that compile against the upstream `qmk/qmk_firmware` repo *without* forking it. The firmware sources are not vendored here — QMK overlays this directory onto its own tree at build time.
 
-Currently it contains one keymap: `keebio/iris/rev8:kristopherjohnson` (a 56-key split ergonomic keyboard, RP2040-based).
+It contains the `kristopherjohnson` keymap built for two physically-identical Keebio Iris boards:
+- `keebio/iris/rev8:kristopherjohnson` — the original, **RP2040**-based (flashed via UF2).
+- `keebio/iris_lm/k1:kristopherjohnson` — the Iris LM-K (Kailh Choc low-profile), **STM32G431**-based (flashed via DFU).
+
+The two boards share a single keymap source — see [Sharing the keymap across boards](#sharing-the-keymap-across-boards). The rev8 keymap is the canonical copy; the LM-K keymap is a set of thin include-shims.
 
 ## Build & flash
 
@@ -19,14 +23,18 @@ qmk config user.overlay_dir="$(realpath .)"   # run from this repo's root
 Then, from this directory:
 
 ```
-qmk compile -kb keebio/iris/rev8 -km kristopherjohnson   # compile one keymap
+qmk compile -kb keebio/iris/rev8 -km kristopherjohnson   # compile rev8 (RP2040)
+qmk compile -kb keebio/iris_lm/k1 -km kristopherjohnson  # compile Iris LM-K (STM32)
 make keebio/iris/rev8:kristopherjohnson                  # equivalent (see Makefile)
 qmk userspace-compile                                    # build all targets listed in qmk.json
 ```
 
 - `make` here is a thin shim (`Makefile`) that delegates to `$(qmk config user.qmk_home)` and passes `QMK_USERSPACE=<this dir>`. It errors if `user.qmk_home` is unset.
 - `qmk.json` (schema `userspace_version` 1.1) is the authoritative list of build targets. Manage it with `qmk userspace-add` / `qmk userspace-remove` / `qmk userspace-list` rather than editing by hand.
-- A successful flashable artifact is the `.uf2` file (an example, `keebio_iris_rev8_kristopherjohnson.uf2`, is committed at the root). Flash by copying the `.uf2` to the RP2040 mass-storage bootloader volume.
+- **rev8 (RP2040)**: the artifact is a `.uf2` (an example, `keebio_iris_rev8_kristopherjohnson.uf2`, is committed at the root). Flash by copying the `.uf2` to the RP2040 mass-storage bootloader volume.
+- **Iris LM-K (STM32G431)**: the artifact is a `.bin`/`.hex` flashed over DFU with `dfu-util`. Use `qmk flash -kb keebio/iris_lm/k1 -km kristopherjohnson`. It's a split board, so flash **each half separately**: connect one half, enter the bootloader (press-and-hold the physical reset button on the back of the PCB ~1 s — more reliable than the "hold top-left key" bootmagic trick, which lands on the *top-right* key on the mirrored right half), then run the flash command. A trailing `dfu-util: Error during download get_status` / `Error 74` after `File downloaded successfully` is **harmless** — the STM32 reboots before acknowledging the DFU leave request; the flash succeeded.
+- **STM32 build gotcha**: building any STM32 target needs the `qmk_firmware` ChibiOS submodules in sync. If a build fails with ``hal.h ... "obsolete or unknown configuration file"``, run `qmk git-submodule` in the `qmk_firmware` checkout (a stale submodule, shown by a `+` in `git submodule status`, is the cause), then do a clean rebuild of rev8 (`qmk compile -c ...`) to clear stale `.build` deps.
+- **Verifying a flash worked** (macOS): `ioreg -p IOUSB -l -w 0 | grep -iE '"USB Product Name"|idProduct'` should show `"Iris LM-K Rev. 1"` with `idProduct = 5974` (0x1756). If it instead shows an ST `0483:df11` / "STM32 BOOTLOADER" device, it's still in DFU mode and hasn't booted the firmware.
 
 ### CI
 
@@ -44,6 +52,15 @@ Each keymap lives at `keyboards/<vendor>/<board>/keymaps/<name>/` and consists o
 - `rules.mk` — feature enable/disable (`X_ENABLE = yes`).
 
 Add a new keymap with `qmk new-keymap -kb <board> -km <name>`, then register it via `qmk userspace-add`. The `layouts/<layout>/<name>/keymap.*` form is also supported.
+
+## Sharing the keymap across boards
+
+The rev8 and Iris LM-K are electrically different (RP2040 vs STM32G431, different pins/bootloader/WS2812 driver) but have a **byte-for-byte identical `LAYOUT` macro and RGB-matrix LED map**. To keep one source of truth, the LM-K keymap does not duplicate the tables — it includes the rev8 ones:
+
+- `keyboards/keebio/iris_lm/k1/keymaps/kristopherjohnson/keymap.c` and `config.h` are one-line shims that `#include "../../../../iris/rev8/keymaps/kristopherjohnson/<file>"`.
+- `rules.mk` is duplicated (two feature toggles — Make `include` of a relative path is fragile) and kept in sync by hand.
+
+**Implication:** edit the layer tables / custom logic only in the **rev8** `keymap.c`/`config.h`; both boards pick up the change on the next build. To share with a future Iris (Kris has more on the way), add another shim keymap dir pointing at rev8 and register it in `qmk.json` — only do this when the new board's `LAYOUT` macro and matrix dimensions match rev8's.
 
 ## Architecture notes for the iris/rev8:kristopherjohnson keymap
 

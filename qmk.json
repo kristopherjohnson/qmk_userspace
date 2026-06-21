@@ -1,6 +1,7 @@
 {
     "userspace_version": "1.1",
     "build_targets": [
-        ["keebio/iris/rev8", "kristopherjohnson"]
+        ["keebio/iris/rev8", "kristopherjohnson"],
+        ["keebio/iris_lm/k1", "kristopherjohnson"]
     ]
 }
