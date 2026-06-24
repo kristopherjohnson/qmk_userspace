@@ -71,7 +71,7 @@ This keymap is the substance of the repo; understanding it requires reading `key
   - `[1]` Lower — numeric keypad on the right, symbols on the left.
   - `[2]` Raise — function keys and arrow/navigation cluster.
   - `[3]` Symbols — reached by holding Space, or as a tri-layer (Raise+Lower).
-  - `[4]` Navigation — reached by holding Enter.
+  - `[4]` Navigation — reached by holding Enter; also hosts the `EE_CLR` clear-EEPROM key on **E** (so hold Enter + E).
   - `[3]`/`[4]` are activated both directly (hold Space / hold Enter) and indirectly via tri-layer. `TRI_LAYER_ENABLE` (in `rules.mk`) makes holding `[1]`+`[2]` activate `[3]`.
 
 - **Split-half state sync**: this is a split keyboard, so per-half state must be replicated. `config.h` enables `SPLIT_LAYER_STATE_ENABLE`, `SPLIT_LED_STATE_ENABLE`, `SPLIT_MODS_ENABLE`, and declares a custom transaction id `USER_SYNC_A` via `SPLIT_TRANSACTION_IDS_USER`.
@@ -83,6 +83,10 @@ This keymap is the substance of the repo; understanding it requires reading `key
   - If you add any other cross-half custom state, follow this same RPC pattern and reuse/extend the `USER_SYNC_A` transaction.
 
 - `CAPS_WORD_ENABLE = yes` plus `DOUBLE_TAP_SHIFT_TURNS_ON_CAPS_WORD` (in `config.h`) make a double-tap of Shift toggle Caps Word.
+
+- **RGB matrix LEDs**: solid color, default **cyan** (`RGB_MATRIX_DEFAULT_HUE 127`, `RGB_MATRIX_DEFAULT_VAL 16`, `RGB_MATRIX_DEFAULT_MODE RGB_MATRIX_SOLID_COLOR` in `config.h`); the indicator hook above overrides to green/blue for Caps Lock/Caps Word. Two gotchas:
+  - **Low `VAL` skews the hue toward green.** At very low brightness (e.g. `VAL 4`) hue 127 quantizes so the green channel beats blue and "cyan" reads as green; keep `VAL` ≥ ~8.
+  - **`RGB_MATRIX_DEFAULT_*` only take effect on an EEPROM reset, not on every flash** — they are the *initial* EEPROM values. After changing an RGB default, clear EEPROM to apply it: press **`EE_CLR`** (hold **Enter + E**, on Navigation layer `[4]`). On this split, keycodes are processed on the USB-connected (master) half, so `EE_CLR` clears that half's EEPROM; RGB config auto-syncs master→slave, so clearing the master updates both halves' color.
 
 ## Code style
 
